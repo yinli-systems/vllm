@@ -133,6 +133,11 @@ pub struct EngineCoreOutput {
     /// the Rust frontend does not yet surface it in responses.
     #[serde(default)]
     pub spec_decode_metrics: Option<OpaqueValue>,
+    /// Sampled-token logprob per new token for requests that set
+    /// `SamplingParams.sampled_logprobs_only`; replaces `new_logprobs` for
+    /// them. Opaque here; the Rust frontend does not surface it yet.
+    #[serde(default)]
+    pub new_sampled_logprobs: Option<OpaqueValue>,
 }
 
 impl EngineCoreOutput {
@@ -501,6 +506,7 @@ mod tests {
                             mm_cache_miss_hashes: None,
                             new_sampling_mask: None,
                             spec_decode_metrics: None,
+                            new_sampled_logprobs: None,
                         },
                     ],
                     scheduler_stats: None,

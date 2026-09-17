@@ -142,9 +142,15 @@ class ServingTokens(GenerateBaseServing):
                 )
             if sampling_params.logprobs is None:
                 sampling_params.logprobs = 0
-            # The flat engine representation is what makes the per-token
-            # array a slice rather than a rebuild.
-            sampling_params.flat_logprobs = True
+            if sampling_params.logprobs == 0:
+                # Only the sampled token's logprob is needed: transport one
+                # float per token from the scheduler and skip per-token
+                # Logprob entries and detokenization entirely.
+                sampling_params.sampled_logprobs_only = True
+            else:
+                # Top logprobs were also requested: keep the object path and
+                # read the sampled column from the flat representation.
+                sampling_params.flat_logprobs = True
         max_num_seqs = self.engine_client.vllm_config.scheduler_config.max_num_seqs
         if sampling_params.n > max_num_seqs:
             return self.create_error_response(
@@ -328,8 +334,11 @@ class ServingTokens(GenerateBaseServing):
 
             token_logprobs = None
             if request.return_token_logprobs:
-                assert isinstance(out_logprobs, FlatLogprobs), "Did not output logprobs"
-                token_logprobs = self._sampled_token_logprobs(out_logprobs)
+                if output.sampled_logprobs is not None:
+                    token_logprobs = [max(x, -9999.0) for x in output.sampled_logprobs]
+                else:
+                    assert isinstance(out_logprobs, FlatLogprobs), "Did not output logprobs"
+                    token_logprobs = self._sampled_token_logprobs(out_logprobs)
 
             # This is top_logprobs in completions API. With
             # return_token_logprobs the objects are only built when the

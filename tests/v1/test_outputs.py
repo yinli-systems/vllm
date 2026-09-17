@@ -155,6 +155,25 @@ def test_sampling_mask_preserves_top_k_boundary_ties():
     assert result.to_nested_list() == [expected_token_ids]
 
 
+def test_logprobs_lists_sampled_logprobs_takes_column_zero():
+    lists = LogprobsLists(
+        logprob_token_ids=np.array([[1, 9], [2, 8], [3, 7], [4, 6]]),
+        logprobs=np.array([[-0.1, -2.0], [-0.2, -3.0], [-0.3, -4.0], [-0.4, -5.0]]),
+        sampled_token_ranks=np.array([1, 1, 2, 1]),
+        cu_num_generated_tokens=[0, 1, 3, 4],
+    )
+    # request 1 owns positions 1 and 2
+    assert lists.sampled_logprobs(1, 2) == pytest.approx([-0.2, -0.3])
+    assert lists.sampled_logprobs(2, 1) == pytest.approx([-0.4])
+    flat = LogprobsLists(
+        logprob_token_ids=[[1], [2], [3]],
+        logprobs=[[-0.5], [-0.6], [-0.7]],
+        sampled_token_ranks=[1, 1, 1],
+        cu_num_generated_tokens=None,
+    )
+    assert flat.sampled_logprobs(1, 2) == pytest.approx([-0.6, -0.7])
+
+
 class TestLogprobsLists(TestCase):
     def setUp(self):
         self.logprobsLists = LogprobsLists(
