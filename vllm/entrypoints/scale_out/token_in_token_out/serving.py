@@ -32,7 +32,7 @@ from vllm.entrypoints.serve.utils.request_logger import RequestLogger
 from vllm.exceptions import GenerationError
 from vllm.inputs import EngineInput, TokensPrompt, mm_input
 from vllm.logger import init_logger
-from vllm.logprobs import Logprob
+from vllm.logprobs import FlatLogprobs, Logprob
 from vllm.multimodal.inputs import (
     MultiModalKwargsItems,
     PlaceholderRange,
@@ -130,6 +130,33 @@ class ServingTokens(GenerateBaseServing):
             raw_request.state.request_metadata = request_metadata
 
         sampling_params = request.sampling_params
+        if request.return_token_logprobs:
+            if request.stream:
+                return self.create_error_response(
+                    "return_token_logprobs is not supported with stream=True"
+                )
+            if self.model_config.logprobs_mode not in (
+                "raw_logprobs",
+                "processed_logprobs",
+            ):
+                # The field is named for log-probabilities; do not hand back
+                # logits under that name.
+                return self.create_error_response(
+                    "return_token_logprobs requires --logprobs-mode raw_logprobs "
+                    "or processed_logprobs (server runs "
+                    f"{self.model_config.logprobs_mode})"
+                )
+            if sampling_params.logprobs is None:
+                sampling_params.logprobs = 0
+            if sampling_params.logprobs == 0:
+                # Only the sampled token's logprob is needed: transport one
+                # float per token from the scheduler and skip per-token
+                # Logprob entries and detokenization entirely.
+                sampling_params.sampled_logprobs_only = True
+            else:
+                # Top logprobs were also requested: keep the object path and
+                # read the sampled column from the flat representation.
+                sampling_params.flat_logprobs = True
         max_num_seqs = self.engine_client.vllm_config.scheduler_config.max_num_seqs
         if sampling_params.n > max_num_seqs:
             return self.create_error_response(
@@ -321,14 +348,33 @@ class ServingTokens(GenerateBaseServing):
             token_ids = output.token_ids
             out_logprobs = output.logprobs
 
-            # This is top_logprobs in completions API
-            if sampling_params.logprobs is not None:
+            sampled_logprobs = None
+            if request.return_token_logprobs:
+                if output.sampled_logprobs is not None:
+                    sampled_logprobs = [
+                        max(x, -9999.0) for x in output.sampled_logprobs
+                    ]
+                else:
+                    assert isinstance(out_logprobs, FlatLogprobs), (
+                        "Did not output logprobs"
+                    )
+                    sampled_logprobs = self._sampled_token_logprobs(out_logprobs)
+
+            # The per-token entries are only built when the caller also asked
+            # for top logprobs: in sampled-only mode no content[i] entry is
+            # materialized at all.
+            if sampling_params.logprobs is not None and not (
+                request.return_token_logprobs and sampling_params.logprobs == 0
+            ):
                 assert out_logprobs is not None, "Did not output logprobs"
                 logprobs = self._create_tokens_logprobs(
                     token_ids=token_ids,
                     top_logprobs=out_logprobs,
                     num_output_top_logprobs=sampling_params.logprobs,
                 )
+                logprobs.sampled = sampled_logprobs
+            elif sampled_logprobs is not None:
+                logprobs = GenerateLogProbs(sampled=sampled_logprobs)
             else:
                 logprobs = None
 
@@ -553,6 +599,20 @@ class ServingTokens(GenerateBaseServing):
             data = self.create_streaming_error_response(e)
             yield f"data: {data}\n\n"
         yield "data: [DONE]\n\n"
+
+    @staticmethod
+    def _sampled_token_logprobs(flat: FlatLogprobs) -> list[float]:
+        """Sampled-token logprob per position from the flat representation.
+
+        The sampler stores the sampled token first at every position, so its
+        logprob is the entry at each position's start index. Every position
+        carries at least that entry whenever ``logprobs`` is requested. Values
+        are clamped exactly as the OpenAI-style path clamps them
+        (``max(logprob, -9999.0)``), so ``-inf`` stays JSON-representable and
+        the two representations never disagree.
+        """
+        logprobs = flat.logprobs
+        return [max(logprobs[start], -9999.0) for start in flat.start_indices]
 
     def _create_tokens_logprobs(
         self,

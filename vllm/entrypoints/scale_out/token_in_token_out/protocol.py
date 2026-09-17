@@ -217,6 +217,16 @@ class GenerateRequest(BaseModel):
 
     stream: bool | None = False
     stream_options: StreamOptions | None = None
+    return_token_logprobs: bool = False
+    """Return the sampled token's logprob per generated position as
+    ``logprobs.sampled``, a flat float list, instead of the per-token
+    ``logprobs.content`` entries. Intended for RL rollout collection, where
+    the trainer needs one float per token and the per-token objects dominate
+    API-server CPU time. Implies ``sampling_params.flat_logprobs``; sets
+    ``sampling_params.logprobs = 0`` when it is unset. Non-streaming only;
+    requires ``--logprobs-mode raw_logprobs`` or ``processed_logprobs``.
+    Values are clamped to ``>= -9999.0`` like the ``content`` entries.
+    ``logprobs > 0`` fills ``content`` alongside ``sampled``."""
     cache_salt: str | None = Field(
         default=None,
         min_length=1,
@@ -346,10 +356,18 @@ class GenerateLogProbs(BaseModel):
 
     ``content`` holds one entry per generated token. ``content=None`` is the
     normal state when no per-token candidates were requested; it is not an
-    error.
+    error — in particular it is the normal state of the sampled-only mode,
+    where only ``sampled`` is filled.
     """
 
     content: list[GenerateLogProbsContent] | None = None
+    sampled: list[float] | None = None
+    """The sampled token's logprob per generated position, set when the
+    request asked for ``return_token_logprobs``.
+
+    In sampled-only mode no ``content`` entry is built for any position,
+    which is what keeps the per-token object cost off the IPC and Pydantic
+    paths. With ``logprobs > 0`` both are filled and the values agree."""
 
 
 class GenerateResponseChoice(BaseModel):
