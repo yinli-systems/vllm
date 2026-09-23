@@ -2,8 +2,10 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import itertools
+import sys
 from collections.abc import Callable, Sequence
 
+import numpy as np
 import torch
 from tqdm import tqdm
 
@@ -36,10 +38,27 @@ _MAX_NUM_ALLOWED_TOKEN_IDS = 1024
 
 
 _bitmask_cache: dict[int, tuple[torch.Tensor, torch.Tensor, torch.Tensor]] = {}
+_LITTLE_ENDIAN = sys.byteorder == "little"
 
 
-def _bitmask_to_token_ids(bitmask_row: torch.Tensor, vocab_size: int) -> list[int]:
-    """Convert a packed int32 bitmask row to a list of allowed token IDs."""
+def _bitmask_to_allowed(bitmask_row: torch.Tensor, vocab_size: int) -> np.ndarray:
+    """Unpack a packed int32 grammar bitmask row into a bool array over the
+    vocabulary (token i is bit i % 32 of word i // 32)."""
+    if (
+        _LITTLE_ENDIAN
+        and bitmask_row.device.type == "cpu"
+        and bitmask_row.dtype == torch.int32
+        and bitmask_row.dim() == 1
+        and bitmask_row.numel() * 32 >= vocab_size
+    ):
+        # On a little-endian host that is bit i of the row's raw bytes in
+        # little-endian bit order, so unpack the bytes directly. The row
+        # (vocab_size / 32 words) is copied first so the caller's tensor never
+        # shares its storage with NumPy.
+        raw = bitmask_row.clone(memory_format=torch.contiguous_format).numpy()
+        bits = np.unpackbits(raw.view(np.uint8), count=vocab_size, bitorder="little")
+        return bits.view(np.bool_)
+
     if vocab_size not in _bitmask_cache:
         indices = torch.arange(vocab_size)
         _bitmask_cache[vocab_size] = (
@@ -47,9 +66,23 @@ def _bitmask_to_token_ids(bitmask_row: torch.Tensor, vocab_size: int) -> list[in
             indices >> 5,  # i // 32
             indices & 31,  # i % 32
         )
-    indices, word_indices, bit_indices = _bitmask_cache[vocab_size]
-    mask = ((bitmask_row[word_indices] >> bit_indices) & 1).bool()
-    return indices[mask].tolist()
+    _, word_indices, bit_indices = _bitmask_cache[vocab_size]
+    return ((bitmask_row[word_indices] >> bit_indices) & 1).bool().cpu().numpy()
+
+
+class _AllowedTokens:
+    """Grammar-allowed token IDs for one beam, answering `token_id in allowed`
+    by bit lookup. Inside free-form strings a grammar allows almost the whole
+    vocabulary, and only the ~2 * beam_width candidate tokens are ever
+    queried, so the full ID list is not built."""
+
+    __slots__ = ("_bits",)
+
+    def __init__(self, bits: np.ndarray):
+        self._bits = bits
+
+    def __contains__(self, token_id: int) -> bool:
+        return 0 <= token_id < len(self._bits) and bool(self._bits[token_id])
 
 
 class BeamSearchOfflineMixin(OfflineInferenceMixin):
@@ -286,11 +319,11 @@ class BeamSearchOfflineMixin(OfflineInferenceMixin):
         # tokens outside the grammar's allowed set. This filtering is also
         # the only grammar enforcement for beams whose allowed set exceeds
         # the engine-side allowed_token_ids cap.
-        allowed_sets: list[set[int] | None] = [None] * len(all_beams)
+        allowed_sets: list[_AllowedTokens | None] = [None] * len(all_beams)
         if structured_output_backend is not None:
             for i, entry in enumerate(beam_entries):
                 if entry is not None:
-                    allowed_sets[i] = set(entry[1])
+                    allowed_sets[i] = entry[1]
 
         for (start, end), instance in zip(instance_start_and_end, instances_batch):
             instance_output = output[start:end]
@@ -417,14 +450,14 @@ class BeamSearchOfflineMixin(OfflineInferenceMixin):
         backend: StructuredOutputBackend,
         structured_output_key: tuple,
         bitmask: torch.Tensor,
-    ) -> list[tuple[SamplingParams, list[int]] | None]:
+    ) -> list[tuple[SamplingParams, _AllowedTokens] | None]:
         """Build per-beam SamplingParams and allowed token IDs from grammar.
 
         Returns None for beams where the grammar has terminated.
         """
         vocab_size = self.model_config.get_vocab_size()
         request_type, grammar_spec = structured_output_key
-        result: list[tuple[SamplingParams, list[int]] | None] = []
+        result: list[tuple[SamplingParams, _AllowedTokens] | None] = []
 
         for beam in beams:
             # Fresh grammar per beam, replaying generated tokens.
@@ -443,9 +476,10 @@ class BeamSearchOfflineMixin(OfflineInferenceMixin):
                 continue
 
             grammar.fill_bitmask(bitmask, 0)
-            allowed_ids = _bitmask_to_token_ids(bitmask[0], vocab_size)
+            allowed = _bitmask_to_allowed(bitmask[0], vocab_size)
+            num_allowed = int(np.count_nonzero(allowed))
 
-            if not allowed_ids:
+            if num_allowed == 0:
                 result.append(None)
                 continue
 
@@ -459,12 +493,12 @@ class BeamSearchOfflineMixin(OfflineInferenceMixin):
                 temperature=base_params.temperature,
                 detokenize=False,
                 allowed_token_ids=(
-                    allowed_ids
-                    if len(allowed_ids) <= _MAX_NUM_ALLOWED_TOKEN_IDS
+                    np.flatnonzero(allowed).tolist()
+                    if num_allowed <= _MAX_NUM_ALLOWED_TOKEN_IDS
                     else None
                 ),
                 skip_clone=True,
             )
-            result.append((beam_params, allowed_ids))
+            result.append((beam_params, _AllowedTokens(allowed)))
 
         return result
