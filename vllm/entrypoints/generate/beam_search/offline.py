@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import itertools
-from collections.abc import Callable, Sequence
+from collections.abc import Sequence
 
 import torch
 from tqdm import tqdm
@@ -26,6 +26,7 @@ from .utils import (
     BeamSearchOutput,
     BeamSearchSequence,
     create_sort_beams_key_function,
+    get_beam_search_score_from_length,
 )
 
 logger = init_logger(__name__)
@@ -50,6 +51,25 @@ def _bitmask_to_token_ids(bitmask_row: torch.Tensor, vocab_size: int) -> list[in
     indices, word_indices, bit_indices = _bitmask_cache[vocab_size]
     mask = ((bitmask_row[word_indices] >> bit_indices) & 1).bool()
     return indices[mask].tolist()
+
+
+def _candidate_score(candidate: tuple) -> float:
+    return candidate[0]
+
+
+def _extend_beam(
+    parent: BeamSearchSequence,
+    token_id: int,
+    logprobs: dict,
+    cum_logprob: float,
+) -> BeamSearchSequence:
+    return BeamSearchSequence(
+        parent.orig_prompt,
+        tokens=parent.tokens + [token_id],
+        logprobs=parent.logprobs + [logprobs],
+        lora_request=parent.lora_request,
+        cum_logprob=cum_logprob,
+    )
 
 
 class BeamSearchOfflineMixin(OfflineInferenceMixin):
@@ -166,7 +186,7 @@ class BeamSearchOfflineMixin(OfflineInferenceMixin):
                         eos_token_id=eos_token_id,
                         ignore_eos=ignore_eos,
                         beam_width=beam_width,
-                        sort_beams_key=sort_beams_key,
+                        length_penalty=length_penalty,
                         structured_output_backend=structured_output_backend,
                         structured_output_key=structured_output_key,
                         structured_output_bitmask=structured_output_bitmask,
@@ -201,7 +221,7 @@ class BeamSearchOfflineMixin(OfflineInferenceMixin):
         eos_token_id: int | None,
         ignore_eos: bool,
         beam_width: int,
-        sort_beams_key: Callable,
+        length_penalty: float,
         structured_output_backend: StructuredOutputBackend | None,
         structured_output_key: tuple | None,
         structured_output_bitmask: torch.Tensor | None,
@@ -305,7 +325,12 @@ class BeamSearchOfflineMixin(OfflineInferenceMixin):
                 instance.beams = []
                 continue
 
-            instance_new_beams = []
+            # Rank candidates before building them: a candidate's history is
+            # its parent's (prompt included) plus one token, and at most
+            # `beam_width` of the 2 * beam_width**2 candidates survive, so
+            # copying every history up front is almost all wasted work. The
+            # ranking itself is unchanged: same score, same stable order.
+            candidates: list[tuple[float, BeamSearchSequence, int, dict, float]] = []
             for i in range(start, end):
                 current_beam = all_beams[i]
                 result = output[i]
@@ -316,27 +341,36 @@ class BeamSearchOfflineMixin(OfflineInferenceMixin):
                 if result.outputs[0].logprobs is not None:
                     logprobs = result.outputs[0].logprobs[0]
                     allowed = allowed_sets[i]
+                    seq_len = len(current_beam.tokens) + 1
                     for token_id, logprob_obj in logprobs.items():
                         if allowed is not None and token_id not in allowed:
                             continue
-                        new_beam = BeamSearchSequence(
-                            current_beam.orig_prompt,
-                            tokens=current_beam.tokens + [token_id],
-                            logprobs=current_beam.logprobs + [logprobs],
-                            lora_request=current_beam.lora_request,
-                            cum_logprob=current_beam.cum_logprob + logprob_obj.logprob,
-                        )
+                        cum_logprob = current_beam.cum_logprob + logprob_obj.logprob
 
                         if token_id == eos_token_id and not ignore_eos:
-                            instance.completed.append(new_beam)
+                            instance.completed.append(
+                                _extend_beam(
+                                    current_beam, token_id, logprobs, cum_logprob
+                                )
+                            )
                         else:
-                            instance_new_beams.append(new_beam)
-            sorted_beams = sorted(
-                instance_new_beams,
-                key=sort_beams_key,
-                reverse=True,
-            )
-            instance.beams = sorted_beams[:beam_width]
+                            score = get_beam_search_score_from_length(
+                                seq_len,
+                                token_id,
+                                cum_logprob,
+                                eos_token_id,  # type: ignore[arg-type]
+                                length_penalty,
+                            )
+                            candidates.append(
+                                (score, current_beam, token_id, logprobs, cum_logprob)
+                            )
+            candidates.sort(key=_candidate_score, reverse=True)
+            instance.beams = [
+                _extend_beam(parent, token_id, logprobs, cum_logprob)
+                for _, parent, token_id, logprobs, cum_logprob in candidates[
+                    :beam_width
+                ]
+            ]
 
         return False
 

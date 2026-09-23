@@ -146,8 +146,21 @@ def get_beam_search_score(
 
     https://github.com/huggingface/transformers/blob/ccb92be23def445f2afdea94c31286f84b89eb5b/src/transformers/generation/beam_search.py#L938
     """
-    seq_len = len(tokens)
-    if tokens[-1] == eos_token_id:
+    return get_beam_search_score_from_length(
+        len(tokens), tokens[-1], cumulative_logprob, eos_token_id, length_penalty
+    )
+
+
+def get_beam_search_score_from_length(
+    seq_len: int,
+    last_token: int,
+    cumulative_logprob: float,
+    eos_token_id: int,
+    length_penalty: float = 1.0,
+) -> float:
+    """`get_beam_search_score` for a sequence known only by its length and
+    last token, so candidates can be ranked before their token lists exist."""
+    if last_token == eos_token_id:
         seq_len -= 1
 
     # An aborted beam may contain only an EOS prompt token.

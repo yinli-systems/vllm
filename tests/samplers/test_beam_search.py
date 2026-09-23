@@ -15,10 +15,21 @@ from transformers import AutoModelForSeq2SeqLM
 
 from vllm import CompletionOutput, RequestOutput
 from vllm.assets.audio import AudioAsset
+from vllm.entrypoints.generate.beam_search.utils import (
+    BeamSearchInstance,
+    BeamSearchSequence,
+    create_sort_beams_key_function,
+    get_beam_search_score,
+    get_beam_search_score_from_length,
+)
 from vllm.entrypoints.llm import LLM
 from vllm.logprobs import Logprob, SampleLogprobs
 from vllm.platforms import current_platform
-from vllm.sampling_params import BeamSearchParams, StructuredOutputsParams
+from vllm.sampling_params import (
+    BeamSearchParams,
+    SamplingParams,
+    StructuredOutputsParams,
+)
 
 # Extra engine kwargs needed for numerically deterministic beam search.
 # On ROCm, floating-point reductions in attention and GEMM kernels are
@@ -359,3 +370,122 @@ def test_beam_search_structured_output(
             print(f"Generated JSON: {generated!r}")
             parsed = json.loads(generated)
             jsonschema.validate(instance=parsed, schema=json_schema)
+
+
+@pytest.mark.parametrize(
+    ("tokens", "length_penalty"),
+    [
+        ([5, 6, 7], 1.0),
+        ([5, 6, 0], 1.0),  # ends in EOS: EOS is not counted
+        ([0], 1.0),  # an aborted beam may hold only an EOS prompt token
+        ([5, 6, 7, 8], 0.0),
+        ([5, 6, 7, 8], 2.0),
+    ],
+)
+def test_beam_search_score_from_length_matches_token_list(
+    tokens: list[int], length_penalty: float
+) -> None:
+    assert get_beam_search_score_from_length(
+        len(tokens), tokens[-1], -1.75, 0, length_penalty
+    ) == get_beam_search_score(tokens, -1.75, 0, length_penalty)
+
+
+@pytest.mark.parametrize("ignore_eos", [False, True])
+@pytest.mark.parametrize("length_penalty", [0.0, 1.0, 2.0])
+def test_beam_search_step_ranks_like_eager_materialization(
+    ignore_eos: bool, length_penalty: float
+) -> None:
+    """Candidates are ranked before their histories are built; the surviving
+    beams, their order (including ties) and the completed list must match
+    building every candidate first and sorting."""
+    eos, beam_width = 0, 3
+    # Parent beams of different lengths, several candidates tied on logprob,
+    # and EOS among the candidates.
+    parents = [
+        [9, 1, 2],
+        [9, 1, 3, 4],
+        [9, 5],
+    ]
+    step_logprobs = [
+        {11: Logprob(-0.5), 12: Logprob(-0.5), 0: Logprob(-0.1)},
+        {11: Logprob(-0.5), 13: Logprob(-1.0), 14: Logprob(-0.5)},
+        {15: Logprob(-0.25), 0: Logprob(-0.25), 16: Logprob(-2.0)},
+    ]
+    cum = [-1.0, -1.5, -0.75]
+
+    def make_instance() -> BeamSearchInstance:
+        instance = BeamSearchInstance({"type": "token", "prompt_token_ids": [9]})
+        instance.beams = [
+            BeamSearchSequence(
+                orig_prompt={"type": "token", "prompt_token_ids": [9]},
+                tokens=list(tokens),
+                logprobs=[{0: Logprob(0.0)}] * (len(tokens) - 1),
+                cum_logprob=c,
+            )
+            for tokens, c in zip(parents, cum)
+        ]
+        return instance
+
+    # Eager reference: the pre-change algorithm, spelled out.
+    reference = make_instance()
+    key = create_sort_beams_key_function(eos, length_penalty)
+    new_beams = []
+    for beam, lps in zip(reference.beams, step_logprobs):
+        for token_id, lp in lps.items():
+            seq = BeamSearchSequence(
+                beam.orig_prompt,
+                tokens=beam.tokens + [token_id],
+                logprobs=beam.logprobs + [lps],
+                cum_logprob=beam.cum_logprob + lp.logprob,
+            )
+            if token_id == eos and not ignore_eos:
+                reference.completed.append(seq)
+            else:
+                new_beams.append(seq)
+    reference.beams = sorted(new_beams, key=key, reverse=True)[:beam_width]
+
+    def run_requests(prompts, **kwargs):
+        by_tokens = {tuple(p): lps for p, lps in zip(parents, step_logprobs)}
+        return [
+            RequestOutput(
+                request_id="inner",
+                prompt=None,
+                prompt_token_ids=prompt["prompt_token_ids"],
+                prompt_logprobs=None,
+                finished=True,
+                outputs=[
+                    CompletionOutput(
+                        index=0,
+                        text="",
+                        token_ids=[1],
+                        cumulative_logprob=None,
+                        logprobs=[by_tokens[tuple(prompt["prompt_token_ids"])]],
+                        finish_reason="length",
+                    )
+                ],
+            )
+            for prompt in prompts
+        ]
+
+    llm = LLM.__new__(LLM)
+    llm._render_and_run_requests = run_requests
+    actual = make_instance()
+    llm._beam_search_step(
+        instances_batch=[actual],
+        base_sampling_params=SamplingParams(logprobs=2 * beam_width, max_tokens=1),
+        eos_token_id=eos,
+        ignore_eos=ignore_eos,
+        beam_width=beam_width,
+        length_penalty=length_penalty,
+        structured_output_backend=None,
+        structured_output_key=None,
+        structured_output_bitmask=None,
+    )
+
+    def view(seqs):
+        return [(s.tokens, s.cum_logprob, s.logprobs) for s in seqs]
+
+    assert view(actual.beams) == view(reference.beams)
+    assert view(actual.completed) == view(reference.completed)
+    # Each surviving beam owns its token list.
+    assert len({id(s.tokens) for s in actual.beams}) == len(actual.beams)
