@@ -1,0 +1,18 @@
+{
+  "url": "https://github.com/sgl-project/sglang/pull/41498",
+  "number": 41498,
+  "state": "open",
+  "draft": true,
+  "head_commit": "82c2d781fe4ca2c1b5e14a98127d3c3a33ff917a",
+  "authored_base_commit": "6cbdfec13c465e4a549b5d465150d0031b43051b",
+  "scope": "FP16 invariantGEMM shared-memorycapacity guard",
+  "published_test_jobs": [
+    1632978,
+    1632979
+  ],
+  "full_model_jobs": [
+    1632825,
+    1632826
+  ],
+  "upstream_CI_completed": false
+}

@@ -1,0 +1,154 @@
+{
+  "utc": "2026-09-28T01:53:12.018243+00:00",
+  "job": 1632893,
+  "source_path": "$CAMPAIGN/runs/mtp-sync-pair-v3-gpu_5090-1632893",
+  "routing": {
+    "base": {
+      "routing_total": 120,
+      "noncausal": 0,
+      "native_prefill": 5,
+      "exit": "0"
+    },
+    "candidate": {
+      "routing_total": 120,
+      "noncausal": 0,
+      "native_prefill": 5,
+      "exit": "0"
+    }
+  },
+  "conclusion": "Real MTP ran only causal routes. Candidate did not change the exercised metadata path. No optimization speedup attribution is possible; this is serving non-regression evidence, not original54919resolution.",
+  "same_hashes": 10,
+  "total_requests": 10,
+  "comparisons": [
+    {
+      "request": "warmup",
+      "input": 64,
+      "output": 16,
+      "baseline_tpot_ms": 0.09920050700505574,
+      "candidate_tpot_ms": 0.10391771793365479,
+      "baseline_ttft_s": 1.316444960422814,
+      "candidate_ttft_s": 0.44393343944102526,
+      "same_output_hash": true,
+      "baseline_hash": "96f3b0db89a18d9f0bb7efb02511b1c6dbdb48ccd818210371e509dd5b070f35",
+      "candidate_hash": "96f3b0db89a18d9f0bb7efb02511b1c6dbdb48ccd818210371e509dd5b070f35",
+      "both_single_token_chunks": false
+    },
+    {
+      "request": "solo-short",
+      "input": 256,
+      "output": 256,
+      "baseline_tpot_ms": 3.7314726770216344,
+      "candidate_tpot_ms": 3.7944825293094504,
+      "baseline_ttft_s": 0.055364131927490234,
+      "candidate_ttft_s": 0.05568267498165369,
+      "same_output_hash": true,
+      "baseline_hash": "c903c3cfab6d7a22bafcd312ce6c0e35174892dd4f45998fb9d930eb8c13e845",
+      "candidate_hash": "c903c3cfab6d7a22bafcd312ce6c0e35174892dd4f45998fb9d930eb8c13e845",
+      "both_single_token_chunks": false
+    },
+    {
+      "request": "solo-long",
+      "input": 8192,
+      "output": 128,
+      "baseline_tpot_ms": 3.2468219617689686,
+      "candidate_tpot_ms": 3.297153332336681,
+      "baseline_ttft_s": 0.3557841246947646,
+      "candidate_ttft_s": 0.3566334079951048,
+      "same_output_hash": true,
+      "baseline_hash": "ffc15bb4c2c0c03d8e6d03c3c8aa0abe9026a86b22fbf4802c636fb72421dc2e",
+      "candidate_hash": "ffc15bb4c2c0c03d8e6d03c3c8aa0abe9026a86b22fbf4802c636fb72421dc2e",
+      "both_single_token_chunks": false
+    },
+    {
+      "request": "mixed-long",
+      "input": 12288,
+      "output": 128,
+      "baseline_tpot_ms": 3.3933323126022272,
+      "candidate_tpot_ms": 3.4444697831911366,
+      "baseline_ttft_s": 0.6304010543972254,
+      "candidate_ttft_s": 0.6323159607127309,
+      "same_output_hash": true,
+      "baseline_hash": "2dd591110c8f7b03512dc28a4d793e8a9167f742b3ace35dd1238154220d3a3d",
+      "candidate_hash": "2dd591110c8f7b03512dc28a4d793e8a9167f742b3ace35dd1238154220d3a3d",
+      "both_single_token_chunks": false
+    },
+    {
+      "request": "mixed-short",
+      "input": 256,
+      "output": 512,
+      "baseline_tpot_ms": 4.335613086557202,
+      "candidate_tpot_ms": 4.389624340995534,
+      "baseline_ttft_s": 0.046120600774884224,
+      "candidate_ttft_s": 0.04485061299055815,
+      "same_output_hash": true,
+      "baseline_hash": "62a360b8a2adec76ecad3687f42962ddc3eaf3b67906f4790113b4036444c6d7",
+      "candidate_hash": "62a360b8a2adec76ecad3687f42962ddc3eaf3b67906f4790113b4036444c6d7",
+      "both_single_token_chunks": false
+    },
+    {
+      "request": "long-pair-a",
+      "input": 32768,
+      "output": 128,
+      "baseline_tpot_ms": 26.076098581350696,
+      "candidate_tpot_ms": 26.121585497881952,
+      "baseline_ttft_s": 1.8184643015265465,
+      "candidate_ttft_s": 1.822877767495811,
+      "same_output_hash": true,
+      "baseline_hash": "e5ef07ee558c579475698d683e7ae78a4b78c69ad19250924f07c7e85d3a7187",
+      "candidate_hash": "e5ef07ee558c579475698d683e7ae78a4b78c69ad19250924f07c7e85d3a7187",
+      "both_single_token_chunks": false
+    },
+    {
+      "request": "long-pair-b",
+      "input": 49152,
+      "output": 128,
+      "baseline_tpot_ms": 3.7443594068406134,
+      "candidate_tpot_ms": 3.7963823672002697,
+      "baseline_ttft_s": 4.788860619999468,
+      "candidate_ttft_s": 4.794395494274795,
+      "same_output_hash": true,
+      "baseline_hash": "a68fe170018c892f8e298a44706eda3c71c05cebaee9a73243cf3a57634002ab",
+      "candidate_hash": "a68fe170018c892f8e298a44706eda3c71c05cebaee9a73243cf3a57634002ab",
+      "both_single_token_chunks": false
+    },
+    {
+      "request": "diagnostic-mtp",
+      "input": 256,
+      "output": 32,
+      "baseline_tpot_ms": 5.535937304938993,
+      "candidate_tpot_ms": 5.524929192277693,
+      "baseline_ttft_s": 0.07537020184099674,
+      "candidate_ttft_s": 0.07523625809699297,
+      "same_output_hash": true,
+      "baseline_hash": "98f3202f74da20b42da1c9603c1569462578ba3be2b5222cf1fceb93e5baf623",
+      "candidate_hash": "98f3202f74da20b42da1c9603c1569462578ba3be2b5222cf1fceb93e5baf623",
+      "both_single_token_chunks": false
+    },
+    {
+      "request": "diagnostic-mixed-long",
+      "input": 8192,
+      "output": 32,
+      "baseline_tpot_ms": 7.149082728691639,
+      "candidate_tpot_ms": 6.906377752461741,
+      "baseline_ttft_s": 0.4538569310680032,
+      "candidate_ttft_s": 0.454280492849648,
+      "same_output_hash": true,
+      "baseline_hash": "224f86fc9f268736daebdb7853108c7fe114aa0870a7912dcf267f25ba801504",
+      "candidate_hash": "224f86fc9f268736daebdb7853108c7fe114aa0870a7912dcf267f25ba801504",
+      "both_single_token_chunks": false
+    },
+    {
+      "request": "diagnostic-mixed-short",
+      "input": 256,
+      "output": 128,
+      "baseline_tpot_ms": 9.595806351092858,
+      "candidate_tpot_ms": 9.937267237174229,
+      "baseline_ttft_s": 0.07248624134808779,
+      "candidate_ttft_s": 0.07170475646853447,
+      "same_output_hash": true,
+      "baseline_hash": "40aa5e238cb7f40b5a5b2bf3b87d4d78833570410755c31fccec5dd05e2ca03b",
+      "candidate_hash": "40aa5e238cb7f40b5a5b2bf3b87d4d78833570410755c31fccec5dd05e2ca03b",
+      "both_single_token_chunks": false
+    }
+  ]
+}

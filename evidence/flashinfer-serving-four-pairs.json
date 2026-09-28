@@ -1,0 +1,223 @@
+{
+  "utc": "2026-09-28T01:31:02.408662+00:00",
+  "n_independent_pairs": 4,
+  "paired_geomean_speedup": 1.0258560457488046,
+  "ci95_log_paired_t3": [
+    1.0175974740546399,
+    1.0341816419867274
+  ],
+  "ci_method": "Student t on4independent paired-server logratios,df3; withinserver requests are not statistical replicates",
+  "predeclared_promotion_target": 1.03,
+  "passed_promotion_threshold": false,
+  "result": "positive measured effect but below predeclared3%promotion target; not promoted",
+  "pairs": [
+    {
+      "run": "$CAMPAIGN/runs/hybrid-serving-abi-gpu_5090-1632694",
+      "ttft_seconds": {
+        "base": {
+          "32k": 1.776980483904481,
+          "48k": 3.0437079090625048
+        },
+        "candidate": {
+          "32k": 1.72981471195817,
+          "48k": 2.9507052320986986
+        }
+      },
+      "ratios": {
+        "32k": 1.0272663723000244,
+        "48k": 1.031518796236267
+      },
+      "primary_paired_speedup": 1.0293903884187563,
+      "quality": {
+        "quality-short": {
+          "base_tpot_ms": 6.507292764224842,
+          "candidate_tpot_ms": 6.508629803783169,
+          "hash_key": "output_sha256",
+          "hash_equal": true,
+          "base_hash": "4d6370c07955ea80084de70e3d75ac3bd14daf6de660534955dfd867e5dd9993",
+          "candidate_hash": "4d6370c07955ea80084de70e3d75ac3bd14daf6de660534955dfd867e5dd9993"
+        },
+        "quality-long": {
+          "base_tpot_ms": 6.657693494756625,
+          "candidate_tpot_ms": 6.652670391783939,
+          "hash_key": "output_sha256",
+          "hash_equal": true,
+          "base_hash": "8251d1779b22a7fe2a85ba5ba7b3f359f277cc95d1f7b2ab852bcae995a33d18",
+          "candidate_hash": "8251d1779b22a7fe2a85ba5ba7b3f359f277cc95d1f7b2ab852bcae995a33d18"
+        },
+        "mixed-short": {
+          "base_tpot_ms": 10.256073099548278,
+          "candidate_tpot_ms": 10.175521546562882,
+          "hash_key": "output_sha256",
+          "hash_equal": true,
+          "base_hash": "62a360b8a2adec76ecad3687f42962ddc3eaf3b67906f4790113b4036444c6d7",
+          "candidate_hash": "62a360b8a2adec76ecad3687f42962ddc3eaf3b67906f4790113b4036444c6d7"
+        },
+        "mixed-long": {
+          "base_tpot_ms": 7.638328118381772,
+          "candidate_tpot_ms": 7.647408770147975,
+          "hash_key": "output_sha256",
+          "hash_equal": true,
+          "base_hash": "79a9c8cd83ea808186c280ba3a248888a70e4cd15aea7618100abf5b92e3a445",
+          "candidate_hash": "79a9c8cd83ea808186c280ba3a248888a70e4cd15aea7618100abf5b92e3a445"
+        }
+      }
+    },
+    {
+      "run": "$CAMPAIGN/runs/hybrid-serving-abi-gpu_5090-1632695",
+      "ttft_seconds": {
+        "base": {
+          "32k": 1.776888671796769,
+          "48k": 3.0367093002423644
+        },
+        "candidate": {
+          "32k": 1.7249577301554382,
+          "48k": 2.9421489033848047
+        }
+      },
+      "ratios": {
+        "32k": 1.0301056314212704,
+        "48k": 1.0321399086051601
+      },
+      "primary_paired_speedup": 1.031122268341059,
+      "quality": {
+        "quality-short": {
+          "base_tpot_ms": 6.541041569674716,
+          "candidate_tpot_ms": 6.536561478951983,
+          "hash_key": "output_sha256",
+          "hash_equal": true,
+          "base_hash": "4d6370c07955ea80084de70e3d75ac3bd14daf6de660534955dfd867e5dd9993",
+          "candidate_hash": "4d6370c07955ea80084de70e3d75ac3bd14daf6de660534955dfd867e5dd9993"
+        },
+        "quality-long": {
+          "base_tpot_ms": 6.67066288026651,
+          "candidate_tpot_ms": 6.676165596032002,
+          "hash_key": "output_sha256",
+          "hash_equal": true,
+          "base_hash": "8251d1779b22a7fe2a85ba5ba7b3f359f277cc95d1f7b2ab852bcae995a33d18",
+          "candidate_hash": "8251d1779b22a7fe2a85ba5ba7b3f359f277cc95d1f7b2ab852bcae995a33d18"
+        },
+        "mixed-short": {
+          "base_tpot_ms": 10.26904689687543,
+          "candidate_tpot_ms": 10.200348704572177,
+          "hash_key": "output_sha256",
+          "hash_equal": true,
+          "base_hash": "62a360b8a2adec76ecad3687f42962ddc3eaf3b67906f4790113b4036444c6d7",
+          "candidate_hash": "62a360b8a2adec76ecad3687f42962ddc3eaf3b67906f4790113b4036444c6d7"
+        },
+        "mixed-long": {
+          "base_tpot_ms": 7.648173840643149,
+          "candidate_tpot_ms": 7.739798503187228,
+          "hash_key": "output_sha256",
+          "hash_equal": true,
+          "base_hash": "79a9c8cd83ea808186c280ba3a248888a70e4cd15aea7618100abf5b92e3a445",
+          "candidate_hash": "79a9c8cd83ea808186c280ba3a248888a70e4cd15aea7618100abf5b92e3a445"
+        }
+      }
+    },
+    {
+      "run": "$CAMPAIGN/runs/hybrid-serving-abi-gpu_5090-1632696",
+      "ttft_seconds": {
+        "base": {
+          "32k": 1.7649757778272033,
+          "48k": 3.0219106911681592
+        },
+        "candidate": {
+          "32k": 1.7294457429088652,
+          "48k": 2.94878588616848
+        }
+      },
+      "ratios": {
+        "32k": 1.0205441743772647,
+        "48k": 1.024798275569168
+      },
+      "primary_paired_speedup": 1.022669012947973,
+      "quality": {
+        "quality-short": {
+          "base_tpot_ms": 6.491030560915961,
+          "candidate_tpot_ms": 6.510074034917588,
+          "hash_key": "output_sha256",
+          "hash_equal": true,
+          "base_hash": "4d6370c07955ea80084de70e3d75ac3bd14daf6de660534955dfd867e5dd9993",
+          "candidate_hash": "4d6370c07955ea80084de70e3d75ac3bd14daf6de660534955dfd867e5dd9993"
+        },
+        "quality-long": {
+          "base_tpot_ms": 6.666197819180611,
+          "candidate_tpot_ms": 6.671905048250213,
+          "hash_key": "output_sha256",
+          "hash_equal": true,
+          "base_hash": "8251d1779b22a7fe2a85ba5ba7b3f359f277cc95d1f7b2ab852bcae995a33d18",
+          "candidate_hash": "8251d1779b22a7fe2a85ba5ba7b3f359f277cc95d1f7b2ab852bcae995a33d18"
+        },
+        "mixed-short": {
+          "base_tpot_ms": 10.19845223837986,
+          "candidate_tpot_ms": 10.170692461314967,
+          "hash_key": "output_sha256",
+          "hash_equal": true,
+          "base_hash": "62a360b8a2adec76ecad3687f42962ddc3eaf3b67906f4790113b4036444c6d7",
+          "candidate_hash": "62a360b8a2adec76ecad3687f42962ddc3eaf3b67906f4790113b4036444c6d7"
+        },
+        "mixed-long": {
+          "base_tpot_ms": 7.613569670393477,
+          "candidate_tpot_ms": 7.646941447879855,
+          "hash_key": "output_sha256",
+          "hash_equal": true,
+          "base_hash": "79a9c8cd83ea808186c280ba3a248888a70e4cd15aea7618100abf5b92e3a445",
+          "candidate_hash": "79a9c8cd83ea808186c280ba3a248888a70e4cd15aea7618100abf5b92e3a445"
+        }
+      }
+    },
+    {
+      "run": "$CAMPAIGN/runs/hybrid-serving-abi-gpu_5090-1632723",
+      "ttft_seconds": {
+        "base": {
+          "32k": 1.7614095453172922,
+          "48k": 3.0180650567635894
+        },
+        "candidate": {
+          "32k": 1.731153610162437,
+          "48k": 2.9499367382377386
+        }
+      },
+      "ratios": {
+        "32k": 1.0174773255112908,
+        "48k": 1.0230948405241225
+      },
+      "primary_paired_speedup": 1.0202822168796655,
+      "quality": {
+        "quality-short": {
+          "base_tpot_ms": 6.450610439859185,
+          "candidate_tpot_ms": 6.461070887013977,
+          "hash_key": "output_sha256",
+          "hash_equal": true,
+          "base_hash": "4d6370c07955ea80084de70e3d75ac3bd14daf6de660534955dfd867e5dd9993",
+          "candidate_hash": "4d6370c07955ea80084de70e3d75ac3bd14daf6de660534955dfd867e5dd9993"
+        },
+        "quality-long": {
+          "base_tpot_ms": 6.60203834335635,
+          "candidate_tpot_ms": 6.594304068703351,
+          "hash_key": "output_sha256",
+          "hash_equal": true,
+          "base_hash": "8251d1779b22a7fe2a85ba5ba7b3f359f277cc95d1f7b2ab852bcae995a33d18",
+          "candidate_hash": "8251d1779b22a7fe2a85ba5ba7b3f359f277cc95d1f7b2ab852bcae995a33d18"
+        },
+        "mixed-short": {
+          "base_tpot_ms": 10.149991475118583,
+          "candidate_tpot_ms": 10.076309842241603,
+          "hash_key": "output_sha256",
+          "hash_equal": true,
+          "base_hash": "62a360b8a2adec76ecad3687f42962ddc3eaf3b67906f4790113b4036444c6d7",
+          "candidate_hash": "62a360b8a2adec76ecad3687f42962ddc3eaf3b67906f4790113b4036444c6d7"
+        },
+        "mixed-long": {
+          "base_tpot_ms": 7.620613662687343,
+          "candidate_tpot_ms": 7.604836713610672,
+          "hash_key": "output_sha256",
+          "hash_equal": true,
+          "base_hash": "79a9c8cd83ea808186c280ba3a248888a70e4cd15aea7618100abf5b92e3a445",
+          "candidate_hash": "79a9c8cd83ea808186c280ba3a248888a70e4cd15aea7618100abf5b92e3a445"
+        }
+      }
+    }
+  ]
+}

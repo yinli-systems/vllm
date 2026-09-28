@@ -1,0 +1,59 @@
+{
+  "snapshot_utc": "2026-09-28T02:04:12.118343+00:00",
+  "public_prs": [
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/58953",
+      "number": 58953,
+      "state": "open",
+      "draft": true,
+      "head_commit": "b2d6161e0f0cbe1e5d1df6f855f43d1e377a654a",
+      "base_commit_authored": "3184226984b17fe0dba960ace5a2d7d57df44ab6",
+      "created_utc": "2026-09-28T01:41:46Z",
+      "scope": "non-causal XQA unused length sync only",
+      "full_54919_fixed": false,
+      "upstream_CI_completed": false
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/41498",
+      "number": 41498,
+      "state": "open",
+      "draft": true,
+      "head_commit": "82c2d781fe4ca2c1b5e14a98127d3c3a33ff917a",
+      "authored_base_commit": "6cbdfec13c465e4a549b5d465150d0031b43051b",
+      "scope": "FP16 invariantGEMM shared-memorycapacity guard",
+      "published_test_jobs": [
+        1632978,
+        1632979
+      ],
+      "full_model_jobs": [
+        1632825,
+        1632826
+      ],
+      "upstream_CI_completed": false
+    }
+  ],
+  "old_baseline": "1632581:36/36real4090operatorcases, archivednotrerun",
+  "rejected_int8_cold_candidate": 0.8640517526649508,
+  "unlocated_old_CPU192_1152_results": "NOTACCEPTED",
+  "XQA_GPU": "1632724:20/20with6changedpaths;1632831:12/12hardenedGPUtest",
+  "MTP_fullmodel": "1632893:10/10outputhashesmatched,120routesperarmallcausal; no changed-path E2Espeedup",
+  "B12X_numeric": "1632688:32/32fixednumericalgates+negativecontrols+mutatedgraph",
+  "B12X_fullmodel": "1632829:real35BloadsweightsbutperlayerworkspaceOOM. ExistingFI4603alreadyaddresseswrapper-sharing; integration remains unqualified. Newfunctionalprobe trackedseparately.",
+  "SGLang_smem": "1632806/7:108/108percard;1632978/9:18/18publictestspercard;1632825/6:6freshserverprocessesallcomplete",
+  "FI_e2e": {
+    "utc": "2026-09-28T01:31:02.408662+00:00",
+    "n_independent_pairs": 4,
+    "paired_geomean_speedup": 1.0258560457488046,
+    "ci95_log_paired_t3": [
+      1.0175974740546399,
+      1.0341816419867274
+    ],
+    "ci_method": "Student t on4independent paired-server logratios,df3; withinserver requests are not statistical replicates",
+    "predeclared_promotion_target": 1.03,
+    "passed_promotion_threshold": false,
+    "result": "positive measured effect but below predeclared3%promotion target; not promoted"
+  },
+  "Triton9939": "priornativeLinuxGDN4/4notoriginalWSLreproduction",
+  "55775": "1632900startupcapacityfailure, notIMA; capacity-correctedjobtracked",
+  "all_seven_fully_fixed": false
+}

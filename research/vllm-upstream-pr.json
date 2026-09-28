@@ -1,0 +1,12 @@
+{
+  "url": "https://github.com/vllm-project/vllm/pull/58953",
+  "number": 58953,
+  "state": "open",
+  "draft": true,
+  "head_commit": "b2d6161e0f0cbe1e5d1df6f855f43d1e377a654a",
+  "base_commit_authored": "3184226984b17fe0dba960ace5a2d7d57df44ab6",
+  "created_utc": "2026-09-28T01:41:46Z",
+  "scope": "non-causal XQA unused length sync only",
+  "full_54919_fixed": false,
+  "upstream_CI_completed": false
+}

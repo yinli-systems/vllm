@@ -1,0 +1,154 @@
+{
+  "bi-model-det-gpu_4090-1632825": {
+    "arms": {
+      "stage2-first": {
+        "unique_logprob_hashes": 1,
+        "unique_token_hashes": 1,
+        "logprob_hashes": [
+          "21664bbc31c2c9318cd42033986f9c76b429fcd52b2bff6f51378f037e019a8c",
+          "21664bbc31c2c9318cd42033986f9c76b429fcd52b2bff6f51378f037e019a8c",
+          "21664bbc31c2c9318cd42033986f9c76b429fcd52b2bff6f51378f037e019a8c",
+          "21664bbc31c2c9318cd42033986f9c76b429fcd52b2bff6f51378f037e019a8c"
+        ],
+        "token_hashes": [
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa",
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa",
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa",
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa"
+        ],
+        "raw_wall_seconds": [
+          2.396905705332756,
+          2.343113411217928,
+          2.360283363610506,
+          2.340453378856182
+        ],
+        "scope": "real pretrained 1.5B GPTQ model; offline engine wall-time, not streaming ITL"
+      },
+      "stage1-control": {
+        "unique_logprob_hashes": 1,
+        "unique_token_hashes": 1,
+        "logprob_hashes": [
+          "21664bbc31c2c9318cd42033986f9c76b429fcd52b2bff6f51378f037e019a8c",
+          "21664bbc31c2c9318cd42033986f9c76b429fcd52b2bff6f51378f037e019a8c",
+          "21664bbc31c2c9318cd42033986f9c76b429fcd52b2bff6f51378f037e019a8c",
+          "21664bbc31c2c9318cd42033986f9c76b429fcd52b2bff6f51378f037e019a8c"
+        ],
+        "token_hashes": [
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa",
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa",
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa",
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa"
+        ],
+        "raw_wall_seconds": [
+          2.358890153467655,
+          2.291347224265337,
+          2.2874112129211426,
+          2.29370341822505
+        ],
+        "scope": "real pretrained 1.5B GPTQ model; offline engine wall-time, not streaming ITL"
+      },
+      "stage2-second": {
+        "unique_logprob_hashes": 1,
+        "unique_token_hashes": 1,
+        "logprob_hashes": [
+          "21664bbc31c2c9318cd42033986f9c76b429fcd52b2bff6f51378f037e019a8c",
+          "21664bbc31c2c9318cd42033986f9c76b429fcd52b2bff6f51378f037e019a8c",
+          "21664bbc31c2c9318cd42033986f9c76b429fcd52b2bff6f51378f037e019a8c",
+          "21664bbc31c2c9318cd42033986f9c76b429fcd52b2bff6f51378f037e019a8c"
+        ],
+        "token_hashes": [
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa",
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa",
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa",
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa"
+        ],
+        "raw_wall_seconds": [
+          2.384186390787363,
+          2.3253084644675255,
+          2.3198901154100895,
+          2.3269795402884483
+        ],
+        "scope": "real pretrained 1.5B GPTQ model; offline engine wall-time, not streaming ITL"
+      }
+    },
+    "all_logprob_hashes_equal": true,
+    "all_token_hashes_equal": true,
+    "all_arm_exit_zero": true
+  },
+  "bi-model-det-gpu_5090-1632826": {
+    "arms": {
+      "stage2-first": {
+        "unique_logprob_hashes": 1,
+        "unique_token_hashes": 1,
+        "logprob_hashes": [
+          "46eed7d0c27785e6bc8fef79a39f317ade4ff9141810b6f020f1de8aaf03f96a",
+          "46eed7d0c27785e6bc8fef79a39f317ade4ff9141810b6f020f1de8aaf03f96a",
+          "46eed7d0c27785e6bc8fef79a39f317ade4ff9141810b6f020f1de8aaf03f96a",
+          "46eed7d0c27785e6bc8fef79a39f317ade4ff9141810b6f020f1de8aaf03f96a"
+        ],
+        "token_hashes": [
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa",
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa",
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa",
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa"
+        ],
+        "raw_wall_seconds": [
+          2.363228442845866,
+          2.287284841062501,
+          2.2887156850192696,
+          2.28870204417035
+        ],
+        "scope": "real pretrained 1.5B GPTQ model; offline engine wall-time, not streaming ITL"
+      },
+      "stage1-control": {
+        "unique_logprob_hashes": 1,
+        "unique_token_hashes": 1,
+        "logprob_hashes": [
+          "46eed7d0c27785e6bc8fef79a39f317ade4ff9141810b6f020f1de8aaf03f96a",
+          "46eed7d0c27785e6bc8fef79a39f317ade4ff9141810b6f020f1de8aaf03f96a",
+          "46eed7d0c27785e6bc8fef79a39f317ade4ff9141810b6f020f1de8aaf03f96a",
+          "46eed7d0c27785e6bc8fef79a39f317ade4ff9141810b6f020f1de8aaf03f96a"
+        ],
+        "token_hashes": [
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa",
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa",
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa",
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa"
+        ],
+        "raw_wall_seconds": [
+          2.193888075184077,
+          2.1325531092006713,
+          2.1319604869931936,
+          2.1338411681354046
+        ],
+        "scope": "real pretrained 1.5B GPTQ model; offline engine wall-time, not streaming ITL"
+      },
+      "stage2-second": {
+        "unique_logprob_hashes": 1,
+        "unique_token_hashes": 1,
+        "logprob_hashes": [
+          "46eed7d0c27785e6bc8fef79a39f317ade4ff9141810b6f020f1de8aaf03f96a",
+          "46eed7d0c27785e6bc8fef79a39f317ade4ff9141810b6f020f1de8aaf03f96a",
+          "46eed7d0c27785e6bc8fef79a39f317ade4ff9141810b6f020f1de8aaf03f96a",
+          "46eed7d0c27785e6bc8fef79a39f317ade4ff9141810b6f020f1de8aaf03f96a"
+        ],
+        "token_hashes": [
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa",
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa",
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa",
+          "2caf3464794377a4fce905565b1c95937ce99dbd151df55ce4f439cef125dfaa"
+        ],
+        "raw_wall_seconds": [
+          2.352558973012492,
+          2.2787811688613147,
+          2.2767195680644363,
+          2.2766370980534703
+        ],
+        "scope": "real pretrained 1.5B GPTQ model; offline engine wall-time, not streaming ITL"
+      }
+    },
+    "all_logprob_hashes_equal": true,
+    "all_token_hashes_equal": true,
+    "all_arm_exit_zero": true
+  }
+}
