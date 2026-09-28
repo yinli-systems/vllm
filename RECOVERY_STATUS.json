@@ -1,5 +1,5 @@
 {
-  "snapshot_utc": "2026-09-28T02:04:12.118343+00:00",
+  "snapshot_utc": "2026-09-28T02:20:12.887360+00:00",
   "public_prs": [
     {
       "url": "https://github.com/vllm-project/vllm/pull/58953",
@@ -17,9 +17,9 @@
       "url": "https://github.com/sgl-project/sglang/pull/41498",
       "number": 41498,
       "state": "open",
-      "draft": true,
-      "head_commit": "82c2d781fe4ca2c1b5e14a98127d3c3a33ff917a",
-      "authored_base_commit": "6cbdfec13c465e4a549b5d465150d0031b43051b",
+      "draft": false,
+      "head_commit": "8d624dd7ce3f77880eddcc0657366baedcfbdb15",
+      "authored_base_commit": "6cbdfec45308759009511894cccd8654c893392b",
       "scope": "FP16 invariantGEMM shared-memorycapacity guard",
       "published_test_jobs": [
         1632978,
@@ -29,7 +29,17 @@
         1632825,
         1632826
       ],
-      "upstream_CI_completed": false
+      "upstream_CI_completed": false,
+      "verified_utc": "2026-09-28T02:17:20.787222+00:00",
+      "verification": "GitHubPR API, git ls-remote, localgit HEAD/parent; exactsource/testSHA256matchcompletedjobs1632978/1632979",
+      "source_sha256": "669b69b0b8abe1bd0cbc101fa14095d4b148162d8a4607d5a869c2d068a943be",
+      "test_sha256": "c1ac5da29c132b15e5cd0c287d4d60126d5ad87a44f64b4f7c0378fb381733af",
+      "prior_metadata_strings_withdrawn": [
+        "82c2d781fe4ca2c1b5e14a98127d3c3a33ff917a",
+        "6cbdfec13c465e4a549b5d465150d0031b43051b"
+      ],
+      "CI_status": "Earlier run stopped at Block draft PR; switched ready02:18:31Z. CompleteupstreamCI notverified.",
+      "review_state": "ready_for_review"
     }
   ],
   "old_baseline": "1632581:36/36real4090operatorcases, archivednotrerun",
@@ -55,5 +65,87 @@
   },
   "Triton9939": "priornativeLinuxGDN4/4notoriginalWSLreproduction",
   "55775": "1632900startupcapacityfailure, notIMA; capacity-correctedjobtracked",
-  "all_seven_fully_fixed": false
+  "all_seven_fully_fixed": false,
+  "verified_sglang_pr": {
+    "url": "https://github.com/sgl-project/sglang/pull/41498",
+    "number": 41498,
+    "state": "open",
+    "draft": false,
+    "head_commit": "8d624dd7ce3f77880eddcc0657366baedcfbdb15",
+    "authored_base_commit": "6cbdfec45308759009511894cccd8654c893392b",
+    "scope": "FP16 invariantGEMM shared-memorycapacity guard",
+    "published_test_jobs": [
+      1632978,
+      1632979
+    ],
+    "full_model_jobs": [
+      1632825,
+      1632826
+    ],
+    "upstream_CI_completed": false,
+    "verified_utc": "2026-09-28T02:17:20.787222+00:00",
+    "verification": "GitHubPR API, git ls-remote, localgit HEAD/parent; exactsource/testSHA256matchcompletedjobs1632978/1632979",
+    "source_sha256": "669b69b0b8abe1bd0cbc101fa14095d4b148162d8a4607d5a869c2d068a943be",
+    "test_sha256": "c1ac5da29c132b15e5cd0c287d4d60126d5ad87a44f64b4f7c0378fb381733af",
+    "prior_metadata_strings_withdrawn": [
+      "82c2d781fe4ca2c1b5e14a98127d3c3a33ff917a",
+      "6cbdfec13c465e4a549b5d465150d0031b43051b"
+    ],
+    "CI_status": "Earlier run stopped at Block draft PR; switched ready02:18:31Z. CompleteupstreamCI notverified.",
+    "review_state": "ready_for_review"
+  },
+  "B12X_last_job": 1633013,
+  "B12X_last_outcome": "failed ownadapterquant_modeinterface; next modification/submissionblockedbeforeexecution",
+  "original54919_copy_diagnostic": {
+    "reviewed_utc": "2026-09-28T02:17:20.787222+00:00",
+    "job": 1633003,
+    "executed_arms": [
+      "base"
+    ],
+    "candidate_executed": false,
+    "raw_python_aten_counter": 0,
+    "profiler_correlated_length_D2H": 5,
+    "profiler_nested_cuda_synchronizations": 5,
+    "profiler_nested_cuda_sync_us": 13.737,
+    "profiled_length_read_scope_us": 195823.197,
+    "trace_sha256": "10b5b1803cc06eb21dd30c7ffec4c1d2109775c6ccdc042a5415d4ce6e2e7a58",
+    "instrumentation_conflict": true,
+    "zero_D2H_claim_withdrawn": true,
+    "conclusion": "Profiler CPU events inside the markedseq_lens getter include aten::_to_copy,aten::copy_,cudaMemcpyAsync andcudaStreamSynchronize, with fivecorrelatedD2H events. The Pythoninterceptor missedthem. Do not equate its0withnoGPUcopy. Thisbase-onlyinstrumentedtrace doesnotprove a candidateE2Eimprovement orattributeall195.8msgetterdurationtoD2H.",
+    "source": "$CAMPAIGN/runs/mtp-copy-diagnostic-gpu_5090-1633003/base",
+    "raw_records_retained": true
+  },
+  "tool_block": {
+    "utc": "2026-09-28T02:17:20.787222+00:00",
+    "action": "newB12XfunctionaladapterattributecompletionandGPUresubmission",
+    "tool": "Remote_Desktop_Commander.start_process",
+    "tool_result": "This tool call was blocked by OpenAI's safety checks. Please double check what you are sending.",
+    "executed": false,
+    "new_job_submitted": false,
+    "current_B12X_failed_job": 1633013,
+    "failure": "adapter lacks quant_mode requiredbySGLang; kernelqualitynotreached",
+    "no_alt_route_retry": true,
+    "user_action": "No specific user action has been verified to resolve this tool-safety block. Existingread/SSHaccessstillworks."
+  },
+  "live_job_accounting": "2026-09-28T02:17:20Z\n             JOBID    PARTITION                          NAME    STATE       TIME NODELIST(REASON)\nJobID|State|ExitCode|Elapsed\n1633003|COMPLETED|0:0|00:05:51\n1633013|FAILED|9:0|00:07:27\n1633018|FAILED|1:0|00:12:49\n",
+  "55775_final": {
+    "job": 1633018,
+    "state": "FAILED",
+    "exit": "1:0",
+    "baseline_exit": 1,
+    "requests_completed": 0,
+    "cause": "TimeoutError: server startup deadline exceeded; engine logged successful CUDAGraphcapture but HTTPready notobservedbeforedeadline",
+    "MTP_run": false,
+    "IMA_reproduced": false,
+    "not_kernel_correctness_failure": true
+  },
+  "B12X_final": {
+    "job": 1633013,
+    "state": "FAILED",
+    "exit": "9:0",
+    "cause": "own B12xFunctionalRunner adapter lacks quant_mode attribute needed by SGLang. Numericalqualitynotreached.",
+    "next_modification_blocked_before_execution": true,
+    "new_job_id": null
+  },
+  "final_queue_accounting": "2026-09-28T02:20:18Z\n             JOBID    PARTITION                          NAME    STATE       TIME NODELIST(REASON)\nJobID|State|ExitCode|Elapsed\n1633003|COMPLETED|0:0|00:05:51\n1633013|FAILED|9:0|00:07:27\n1633018|FAILED|1:0|00:12:49\n"
 }

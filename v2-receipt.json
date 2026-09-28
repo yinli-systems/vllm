@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "snapshot_utc": "2026-09-28T02:20:12.887360+00:00",
+  "archive": "gpu_pr_milestone_20260928_v2.zip",
+  "bytes": 238836,
+  "sha256": "966d2327c78c6b471bc9af49f0a2d173bfe84c2757aa8b930f681729371cc39e",
+  "files": 228,
+  "SGLang_head": "8d624dd7ce3f77880eddcc0657366baedcfbdb15",
+  "vLLM_head": "b2d6161e0f0cbe1e5d1df6f855f43d1e377a654a"
+}

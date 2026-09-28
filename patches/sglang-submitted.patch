@@ -1,0 +1,124 @@
+From 8d624dd7ce3f77880eddcc0657366baedcfbdb15 Mon Sep 17 00:00:00 2001
+From: Yin Li <215896158+yinli-systems@users.noreply.github.com>
+Date: Mon, 28 Sep 2026 05:56:19 +0400
+Subject: [PATCH] [Fix] Respect shared-memory capacity in FP16 batch-invariant
+ GEMM
+
+Use two pipeline stages on CUDA devices with less than 128KiB
+opt-in shared memory. Keep the tile and per-output reduction order
+unchanged. Three FP16 stages require 106496 bytes on tested SM89
+and SM120 GPUs, exceeding their 101376-byte limit.
+
+Real GPU evidence: 108/108 operator cases per RTX4090/RTX5090;
+18/18 committed GPU pytest cases per GPU on current source; full
+Qwen2.5-1.5B GPTQ deterministic serving launches and produces stable
+token/logprob hashes across fresh processes on both architectures.
+
+Separate from the Marlin atomic-add guard in #39456. One-stage
+controls also remain numerically identical; this is a resource
+correctness fix, not a claim that two stages maximize serving speed.
+
+AI-assisted implementation and validation; upstream CI pending.
+
+Signed-off-by: Yin Li <215896158+yinli-systems@users.noreply.github.com>
+---
+ .../batch_invariant_ops.py                    | 11 +++-
+ .../test_fp16_shared_memory.py                | 64 +++++++++++++++++++
+ 2 files changed, 74 insertions(+), 1 deletion(-)
+ create mode 100644 test/registered/unit/batch_invariant_ops/test_fp16_shared_memory.py
+
+diff --git a/python/sglang/srt/batch_invariant_ops/batch_invariant_ops.py b/python/sglang/srt/batch_invariant_ops/batch_invariant_ops.py
+index b6a7a58..78f9990 100644
+--- a/python/sglang/srt/batch_invariant_ops/batch_invariant_ops.py
++++ b/python/sglang/srt/batch_invariant_ops/batch_invariant_ops.py
+@@ -224,7 +224,16 @@ def _matmul_persistent_triton(
+             "num_warps": 8,
+         },
+     }
+-    # print(a.device, b.device, c.device)
++    # The three-stage FP16 tile exceeds the 99-KiB shared-memory budget
++    # of Ada and consumer Blackwell GPUs. Pipeline depth does not change
++    # the per-output reduction order or depend on the request batch size.
++    if a.dtype == torch.float16 and a.is_cuda and torch.version.hip is None:
++        capacity = torch.cuda.get_device_properties(
++            a.device
++        ).shared_memory_per_block_optin
++        if capacity < 128 * 1024:
++            configs[a.dtype]["num_stages"] = 2
++
+     matmul_kernel_persistent[grid](
+         a,
+         b,
+diff --git a/test/registered/unit/batch_invariant_ops/test_fp16_shared_memory.py b/test/registered/unit/batch_invariant_ops/test_fp16_shared_memory.py
+new file mode 100644
+index 0000000..9f7a6ed
+--- /dev/null
++++ b/test/registered/unit/batch_invariant_ops/test_fp16_shared_memory.py
+@@ -0,0 +1,64 @@
++"""Regression for FP16 invariant GEMM on GPUs with a 99-KiB SMEM limit."""
++
++import pytest
++import torch
++
++from sglang.srt.batch_invariant_ops.batch_invariant_ops import _matmul_persistent_triton
++from sglang.test.ci.ci_register import register_cuda_ci
++
++register_cuda_ci(est_time=80, stage="base-b", runner_config="1-gpu-small")
++register_cuda_ci(est_time=80, stage="base-b", runner_config="1-gpu-large")
++
++
++@pytest.mark.skipif(not torch.cuda.is_available(), reason="requires CUDA")
++@pytest.mark.parametrize("dtype", [torch.float16, torch.bfloat16, torch.float32])
++@pytest.mark.parametrize("n,k", [(1536, 1536), (151936, 1536), (8193, 257)])
++@pytest.mark.parametrize("with_bias", [False, True])
++def test_persistent_gemm_capacity_and_batch_invariance(dtype, n, k, with_bias):
++    if torch.version.hip is not None:
++        pytest.skip("NVIDIA shared-memory capacity regression")
++    torch.manual_seed(821913)
++    original_tf32 = torch.backends.cuda.matmul.allow_tf32
++    torch.backends.cuda.matmul.allow_tf32 = False
++    try:
++        a_all = torch.randn(129, k, device="cuda", dtype=dtype) * 0.05
++        weight = (torch.randn(n, k, device="cuda", dtype=dtype) * 0.05).T
++        bias = torch.randn(n, device="cuda", dtype=dtype) * 0.01 if with_bias else None
++        columns = torch.linspace(0, n - 1, min(n, 16), device="cuda").long()
++        reference_weight = weight[:, columns].cpu().double()
++        reference_bias = bias[columns].cpu().double() if bias is not None else 0.0
++        rtol, atol = {
++            torch.float16: (0.004, 0.001),
++            torch.bfloat16: (0.02, 0.005),
++            torch.float32: (0.001, 0.0003),
++        }[dtype]
++        first_row = None
++        for rows in [1, 13, 63, 129]:
++            a = a_all[:rows]
++            actual = _matmul_persistent_triton(a, weight, dtype, bias)
++            torch.cuda.synchronize()
++            assert torch.isfinite(actual).all()
++            reference = (a.cpu().double() @ reference_weight + reference_bias).to(dtype)
++            torch.testing.assert_close(
++                actual[:, columns].cpu(), reference, rtol=rtol, atol=atol
++            )
++            if first_row is None:
++                first_row = actual[0].clone()
++            else:
++                assert torch.equal(first_row, actual[0])
++        if dtype == torch.float16:
++            a = a_all[:13]
++            original = a.clone()
++            graph = torch.cuda.CUDAGraph()
++            with torch.cuda.graph(graph):
++                captured = _matmul_persistent_triton(a, weight, dtype, bias)
++            a.add_(0.003)
++            graph.replay()
++            torch.cuda.synchronize()
++            reference = (a.cpu().double() @ reference_weight + reference_bias).to(dtype)
++            torch.testing.assert_close(
++                captured[:, columns].cpu(), reference, rtol=rtol, atol=atol
++            )
++            a.copy_(original)
++    finally:
++        torch.backends.cuda.matmul.allow_tf32 = original_tf32
+-- 
+2.50.1 (Apple Git-155)
+

@@ -2,9 +2,9 @@
   "url": "https://github.com/sgl-project/sglang/pull/41498",
   "number": 41498,
   "state": "open",
-  "draft": true,
-  "head_commit": "82c2d781fe4ca2c1b5e14a98127d3c3a33ff917a",
-  "authored_base_commit": "6cbdfec13c465e4a549b5d465150d0031b43051b",
+  "draft": false,
+  "head_commit": "8d624dd7ce3f77880eddcc0657366baedcfbdb15",
+  "authored_base_commit": "6cbdfec45308759009511894cccd8654c893392b",
   "scope": "FP16 invariantGEMM shared-memorycapacity guard",
   "published_test_jobs": [
     1632978,
@@ -14,5 +14,15 @@
     1632825,
     1632826
   ],
-  "upstream_CI_completed": false
+  "upstream_CI_completed": false,
+  "verified_utc": "2026-09-28T02:17:20.787222+00:00",
+  "verification": "GitHubPR API, git ls-remote, localgit HEAD/parent; exactsource/testSHA256matchcompletedjobs1632978/1632979",
+  "source_sha256": "669b69b0b8abe1bd0cbc101fa14095d4b148162d8a4607d5a869c2d068a943be",
+  "test_sha256": "c1ac5da29c132b15e5cd0c287d4d60126d5ad87a44f64b4f7c0378fb381733af",
+  "prior_metadata_strings_withdrawn": [
+    "82c2d781fe4ca2c1b5e14a98127d3c3a33ff917a",
+    "6cbdfec13c465e4a549b5d465150d0031b43051b"
+  ],
+  "CI_status": "Earlier run stopped at Block draft PR; switched ready02:18:31Z. CompleteupstreamCI notverified.",
+  "review_state": "ready_for_review"
 }

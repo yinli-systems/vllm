@@ -1,0 +1,19 @@
+{
+  "reviewed_utc": "2026-09-28T02:17:20.787222+00:00",
+  "job": 1633003,
+  "executed_arms": [
+    "base"
+  ],
+  "candidate_executed": false,
+  "raw_python_aten_counter": 0,
+  "profiler_correlated_length_D2H": 5,
+  "profiler_nested_cuda_synchronizations": 5,
+  "profiler_nested_cuda_sync_us": 13.737,
+  "profiled_length_read_scope_us": 195823.197,
+  "trace_sha256": "10b5b1803cc06eb21dd30c7ffec4c1d2109775c6ccdc042a5415d4ce6e2e7a58",
+  "instrumentation_conflict": true,
+  "zero_D2H_claim_withdrawn": true,
+  "conclusion": "Profiler CPU events inside the markedseq_lens getter include aten::_to_copy,aten::copy_,cudaMemcpyAsync andcudaStreamSynchronize, with fivecorrelatedD2H events. The Pythoninterceptor missedthem. Do not equate its0withnoGPUcopy. Thisbase-onlyinstrumentedtrace doesnotprove a candidateE2Eimprovement orattributeall195.8msgetterdurationtoD2H.",
+  "source": "$CAMPAIGN/runs/mtp-copy-diagnostic-gpu_5090-1633003/base",
+  "raw_records_retained": true
+}

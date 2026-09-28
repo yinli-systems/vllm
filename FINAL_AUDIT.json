@@ -1,0 +1,167 @@
+{
+  "snapshot_utc": "2026-09-28T02:20:12.887360+00:00",
+  "upstream_prs": [
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/58953",
+      "number": 58953,
+      "state": "open",
+      "draft": true,
+      "head_commit": "b2d6161e0f0cbe1e5d1df6f855f43d1e377a654a",
+      "base_commit_authored": "3184226984b17fe0dba960ace5a2d7d57df44ab6",
+      "created_utc": "2026-09-28T01:41:46Z",
+      "scope": "non-causal XQA unused length sync only",
+      "full_54919_fixed": false,
+      "upstream_CI_completed": false
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/41498",
+      "number": 41498,
+      "state": "open",
+      "draft": false,
+      "head_commit": "8d624dd7ce3f77880eddcc0657366baedcfbdb15",
+      "authored_base_commit": "6cbdfec45308759009511894cccd8654c893392b",
+      "scope": "FP16 invariantGEMM shared-memorycapacity guard",
+      "published_test_jobs": [
+        1632978,
+        1632979
+      ],
+      "full_model_jobs": [
+        1632825,
+        1632826
+      ],
+      "upstream_CI_completed": false,
+      "verified_utc": "2026-09-28T02:17:20.787222+00:00",
+      "verification": "GitHubPR API, git ls-remote, localgit HEAD/parent; exactsource/testSHA256matchcompletedjobs1632978/1632979",
+      "source_sha256": "669b69b0b8abe1bd0cbc101fa14095d4b148162d8a4607d5a869c2d068a943be",
+      "test_sha256": "c1ac5da29c132b15e5cd0c287d4d60126d5ad87a44f64b4f7c0378fb381733af",
+      "prior_metadata_strings_withdrawn": [
+        "82c2d781fe4ca2c1b5e14a98127d3c3a33ff917a",
+        "6cbdfec13c465e4a549b5d465150d0031b43051b"
+      ],
+      "CI_status": "Earlier run stopped at Block draft PR; switched ready02:18:31Z. CompleteupstreamCI notverified.",
+      "review_state": "ready_for_review"
+    }
+  ],
+  "all_seven_fully_fixed": false,
+  "verified_passes": {
+    "4090_baseline": {
+      "job": 1632581,
+      "cases": 36,
+      "rerun": false
+    },
+    "XQA_cuda": {
+      "job": 1632724,
+      "cases": 20,
+      "changed_paths": 6
+    },
+    "XQA_poisoned_GPU_pytest": {
+      "job": 1632831,
+      "cases": 12
+    },
+    "MTP_fullmodel": {
+      "job": 1632893,
+      "same_hashes": 10,
+      "routes_per_arm": 120,
+      "all_routes_causal": true,
+      "performance_improvement_attributable": false
+    },
+    "B12X_numeric": {
+      "job": 1632688,
+      "cases": 32,
+      "nvfp4_relL2_max_threshold": 0.06,
+      "nvfp4_cos_min_threshold": 0.998,
+      "w4a16_relL2_max_threshold": 0.02,
+      "w4a16_cos_min_threshold": 0.9998
+    },
+    "SG_operator": {
+      "jobs": [
+        1632806,
+        1632807
+      ],
+      "cases_per_gpu": 108
+    },
+    "SG_submitted_GPU_tests": {
+      "jobs": [
+        1632978,
+        1632979
+      ],
+      "cases_per_gpu": 18
+    },
+    "SG_fullmodel": {
+      "jobs": [
+        1632825,
+        1632826
+      ],
+      "fresh_servers_total": 6,
+      "within_each_GPU_all_token_logprob_hashes_equal": true,
+      "cross_gpu_logprob_equality_claim": false
+    }
+  },
+  "negative_results": {
+    "int8_heldout_cold_geomean": 0.8640517526649508,
+    "int8_status": "REJECTED",
+    "FI_four_pair_geomean": 1.0265830081851195,
+    "FI_95CI": [
+      1.0179124777003081,
+      1.0353273969449845
+    ],
+    "FI_promotion_gate": 1.03,
+    "FI_promotion_passed": false,
+    "Triton9939_original_WSL_reproduced": false,
+    "old_CPU192_1152_artifacts_found": false
+  },
+  "failed_or_blocked": {
+    "B12X": {
+      "job": 1633013,
+      "state": "FAILED",
+      "exit": "9:0",
+      "cause": "own B12xFunctionalRunner adapter lacks quant_mode attribute needed by SGLang. Numericalqualitynotreached.",
+      "next_modification_blocked_before_execution": true,
+      "new_job_id": null
+    },
+    "55775": {
+      "job": 1633018,
+      "state": "FAILED",
+      "exit": "1:0",
+      "baseline_exit": 1,
+      "requests_completed": 0,
+      "cause": "TimeoutError: server startup deadline exceeded; engine logged successful CUDAGraphcapture but HTTPready notobservedbeforedeadline",
+      "MTP_run": false,
+      "IMA_reproduced": false,
+      "not_kernel_correctness_failure": true
+    },
+    "diagnostic": {
+      "reviewed_utc": "2026-09-28T02:17:20.787222+00:00",
+      "job": 1633003,
+      "executed_arms": [
+        "base"
+      ],
+      "candidate_executed": false,
+      "raw_python_aten_counter": 0,
+      "profiler_correlated_length_D2H": 5,
+      "profiler_nested_cuda_synchronizations": 5,
+      "profiler_nested_cuda_sync_us": 13.737,
+      "profiled_length_read_scope_us": 195823.197,
+      "trace_sha256": "10b5b1803cc06eb21dd30c7ffec4c1d2109775c6ccdc042a5415d4ce6e2e7a58",
+      "instrumentation_conflict": true,
+      "zero_D2H_claim_withdrawn": true,
+      "conclusion": "Profiler CPU events inside the markedseq_lens getter include aten::_to_copy,aten::copy_,cudaMemcpyAsync andcudaStreamSynchronize, with fivecorrelatedD2H events. The Pythoninterceptor missedthem. Do not equate its0withnoGPUcopy. Thisbase-onlyinstrumentedtrace doesnotprove a candidateE2Eimprovement orattributeall195.8msgetterdurationtoD2H.",
+      "source": "$CAMPAIGN/runs/mtp-copy-diagnostic-gpu_5090-1633003/base",
+      "raw_records_retained": true
+    },
+    "tool": {
+      "utc": "2026-09-28T02:17:20.787222+00:00",
+      "action": "newB12XfunctionaladapterattributecompletionandGPUresubmission",
+      "tool": "Remote_Desktop_Commander.start_process",
+      "tool_result": "This tool call was blocked by OpenAI's safety checks. Please double check what you are sending.",
+      "executed": false,
+      "new_job_submitted": false,
+      "current_B12X_failed_job": 1633013,
+      "failure": "adapter lacks quant_mode requiredbySGLang; kernelqualitynotreached",
+      "no_alt_route_retry": true,
+      "user_action": "No specific user action has been verified to resolve this tool-safety block. Existingread/SSHaccessstillworks."
+    }
+  },
+  "queue": "2026-09-28T02:20:18Z\n             JOBID    PARTITION                          NAME    STATE       TIME NODELIST(REASON)\nJobID|State|ExitCode|Elapsed\n1633003|COMPLETED|0:0|00:05:51\n1633013|FAILED|9:0|00:07:27\n1633018|FAILED|1:0|00:12:49\n",
+  "recovery_root": "$CAMPAIGN"
+}
