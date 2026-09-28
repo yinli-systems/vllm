@@ -225,6 +225,12 @@ def triton_scaled_mm(
         else:
             tile_shape = (128, 128, 128)
 
+    # The heuristic was tuned for one-byte operands. Preserve its staged
+    # byte footprint for wider dtypes instead of exhausting shared memory.
+    if use_heuristic:
+        tile_m, tile_n, tile_k = tile_shape
+        tile_shape = (tile_m, tile_n, tile_k // input.element_size())
+
     block_size_m, block_size_n, block_size_k = tile_shape
 
     block_size_sa = 1 if has_scalar(scale_a) else block_size_m
